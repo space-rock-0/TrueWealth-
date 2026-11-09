@@ -65,7 +65,7 @@ Email verification links expire after one hour. Password reset uses the same one
 
 ## **Live Demo**
 
-Try the real-time TrueWealth AI: [**TrueWealth AI – Click Here**](https://truewealth-ai.onrender.com/)
+Try the real-time TrueWealth AI: [**TrueWealth AI – Click Here**](https://truewealth-sagi.vercel.app/)
 
 ---
 
