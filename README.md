@@ -31,20 +31,22 @@
 It's an **end-to-end Multi-Agent Financial Advisor AI System** that delivers **reliable, real-time investment insights** by combining **LangGraph-powered orchestration**, multi-tier **LLM reasoning (GPT-OSS-120B, Llama 3.3, and Llama 3.1 via Groq, routed through a LiteLLM gateway)**, and **RAG with ChromaDB + HuggingFace embeddings**. It features **Retriever, Generator, Market Desk, Portfolio Analyst, Due Diligence, Compliance Officer, News, Web Search, and Memory agents**, with a rule-based compliance layer, a single-call hallucination/grounding check, real (pandas/numpy-computed) portfolio risk analysis, and a human-in-the-loop review queue for anything the system itself flags as risky.
 
 Engineered with a **modular, scalable architecture**, it includes a high-performance **FastAPI backend** for agent orchestration, a **React responsive UI (React, Tailwind CSS)** for a premium client experience, and full **Dockerization** for portability. Deployed with a **CI/CD pipeline**, it adheres to enterprise software practices.
-
-
 <div align="center">
-  <video src="https://github.com/user-attachments/assets/ce941c51-aa8e-47b3-8124-02d1b21bd9b7" width="100%" controls>
+  <video src="https://github.com/user-attachments/assets/37fd561c-4925-4efe-bbc4-39ba9eea21a0" width="100%" controls>
     Your browser does not support the video tag.
   </video>
 </div>
+
 <hr>
+
 <div align="center">
-  <img src="demo.png" alt="TrueWealth AI" width="100%">
+  <img width="959" height="455" alt="TrueWealth AI" src="https://github.com/user-attachments/assets/343387c6-3fc6-4b36-9be6-f3b995f09ca8" />
 </div>
+
 <hr>
+
 <div align="center">
-  <img src="demo-1.png" alt="TrueWealth AI" width="100%">
+  <img width="959" height="454" alt="TrueWealth AI" src="https://github.com/user-attachments/assets/57ecfa3e-3b01-4e87-82d7-66a8e0142dbe" />
 </div>
 
 ---
