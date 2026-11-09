@@ -69,6 +69,20 @@ def send_email(recipient, subject, text):
             with urllib.request.urlopen(request, timeout=15) as response:
                 if response.status not in (200, 201, 202):
                     raise RuntimeError('Email provider rejected delivery.')
+        except urllib.error.HTTPError as error:
+            try:
+                detail = json.load(error)
+            except (ValueError, TypeError):
+                detail = {}
+            message = str(detail.get('message', ''))
+            address = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', message) if 'unrecognised IP' in message else None
+            logger = logging.getLogger('backend')
+            if address:
+                logger.warning('Email delivery blocked by Brevo IP allowlist; authorize outbound IP %s.', address.group(0))
+            else:
+                code = re.sub(r'[^A-Za-z0-9_-]', '', str(detail.get('code', 'unknown')))[:64]
+                logger.warning('Email provider rejected delivery: HTTP %s, code %s. Verify transactional account activation and sender.', error.code, code)
+            raise RuntimeError('Email delivery failed. Check the sender verification and provider configuration.') from None
         except (urllib.error.URLError, TimeoutError):
             raise RuntimeError('Email delivery failed. Check the sender verification and provider configuration.') from None
         return

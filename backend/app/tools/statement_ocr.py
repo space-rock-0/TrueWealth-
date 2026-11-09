@@ -4,6 +4,7 @@ import os
 import json
 import subprocess
 import sys
+import io
 
 _lock = threading.Lock()
 _engine = None
@@ -20,18 +21,21 @@ def extract_pages(raw, texts):
     if os.getenv('OCR_ISOLATED', 'false').lower() == 'true':
         env = dict(os.environ, OCR_ISOLATED='false')
         try:
-            result = subprocess.run([sys.executable, '-m', 'app.tools.statement_ocr_worker'], input=raw, capture_output=True, timeout=120, env=env)
+            with _lock:
+                result = subprocess.run([sys.executable, '-m', 'app.tools.statement_ocr_worker'], input=raw, capture_output=True, timeout=120, env=env)
         except subprocess.TimeoutExpired:
             raise ValueError('OCR timed out. Upload fewer scanned pages or a bank CSV export.') from None
         if result.returncode != 0:
             raise ValueError('OCR could not process this scan. Try a smaller PDF or clearer image.')
         return json.loads(result.stdout)
-    import numpy as np
     import pypdfium2 as pdfium
-    from rapidocr_onnxruntime import RapidOCR
+    engine_name = os.getenv('OCR_ENGINE', 'rapidocr')
+    if engine_name != 'tesseract':
+        import numpy as np
+        from rapidocr_onnxruntime import RapidOCR
     global _engine
     with _lock:
-        if _engine is None:
+        if engine_name != 'tesseract' and _engine is None:
             _engine = RapidOCR()
         pdf = pdfium.PdfDocument(raw)
         try:
@@ -41,8 +45,16 @@ def extract_pages(raw, texts):
                 scale = min(2.5, int(os.getenv('OCR_MAX_IMAGE_EDGE', '2500')) / max(width, height))
                 bitmap = page.render(scale=scale)
                 try:
-                    result, _ = _engine(np.asarray(bitmap.to_pil()).copy())
-                    texts[index] = '\n'.join(row[1] for row in (result or []))
+                    if engine_name == 'tesseract':
+                        image = io.BytesIO()
+                        bitmap.to_pil().save(image, format='PNG')
+                        result = subprocess.run(['tesseract', 'stdin', 'stdout', '-l', 'eng', '--psm', '6'], input=image.getvalue(), capture_output=True, timeout=45)
+                        if result.returncode != 0:
+                            raise ValueError('Server OCR could not read this page. Try a clearer scan or a CSV export.')
+                        texts[index] = result.stdout.decode('utf-8', errors='replace')
+                    else:
+                        result, _ = _engine(np.asarray(bitmap.to_pil()).copy())
+                        texts[index] = '\n'.join(row[1] for row in (result or []))
                 finally:
                     bitmap.close()
                     page.close()

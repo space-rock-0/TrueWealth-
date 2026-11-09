@@ -30,6 +30,8 @@ services:
         value: "true"
       - key: OCR_ISOLATED
         value: "true"
+      - key: OCR_ENGINE
+        value: tesseract
       - key: OCR_MAX_PAGES
         value: "4"
       - key: OCR_MAX_IMAGE_EDGE

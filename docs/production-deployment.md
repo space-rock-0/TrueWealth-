@@ -16,7 +16,7 @@ Users can provide their own Groq, OpenAI, Anthropic, or Gemini keys in Settings.
 
 Render's free web service has 512 MB RAM, sleeps when idle, has an ephemeral filesystem, and blocks SMTP ports. It does not provide always-on production uptime. See [Render's current limitations](https://render.com/docs/free).
 
-The cloud image installs `requirements-production.txt`, excluding PyTorch and the local embedding model. It uses bounded lexical retrieval and PostgreSQL chat history instead. OCR runs in a short-lived subprocess to release its model memory; it is limited to four scanned pages per file with a maximum rendered image edge of 1,800 pixels. Searchable PDFs can contain up to 100 pages. Larger scanned statements should be split or exported as bank CSV.
+The cloud image installs `requirements-production.txt`, excluding PyTorch and the local embedding model. It uses bounded lexical retrieval and PostgreSQL chat history instead. Cloud OCR uses Tesseract in a short-lived subprocess to release its memory; it is limited to four scanned pages per file with a maximum rendered image edge of 1,800 pixels. The Docker build verifies OCR using a generated scanned PDF. Searchable PDFs can contain up to 100 pages. Larger scanned statements should be split or exported as bank CSV. Local development retains RapidOCR by default.
 
 An analysis already submitted to the server continues after the browser tab closes. Its provider key remains in memory only. Stale analysis jobs are marked retryable after ten minutes, avoiding premature cancellation during a rolling deploy. A restart can interrupt a job; there is no persistent external job queue. Do not scale to multiple API workers until job coordination and distributed rate limiting are implemented.
 

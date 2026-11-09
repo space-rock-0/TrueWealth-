@@ -17,6 +17,7 @@ from app.core.logger import logger
 from app.core.review import needs_review
 from app.core.rate_limit import limiter
 from app.core.email_delivery import inspect_email_sender
+from app.core.request_limits import RequestLimitsMiddleware
 from app.core.state import initialize_state
 from app.core.workflow import get_workflow_app
 from app.auth import get_current_user, require_csrf, router as auth_router
@@ -53,6 +54,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "X-CSRF-Token", "X-LLM-Provider", "X-LLM-Model", "X-LLM-API-Key"],
 )
+app.add_middleware(RequestLimitsMiddleware)
 
 _MODEL_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,149}$")
 _SUPPORTED_PROVIDERS = set(DEFAULT_PROVIDER_MODELS)
