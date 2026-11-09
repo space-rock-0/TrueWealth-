@@ -5,7 +5,36 @@ import smtplib
 import ssl
 import urllib.error
 import urllib.request
+import re
+import logging
 from email.message import EmailMessage
+
+
+def inspect_email_sender():
+    """Read-only startup diagnostic; never logs keys or sends a message."""
+    if os.getenv('EMAIL_PROVIDER') != 'brevo' or not email_configured():
+        return
+    request = urllib.request.Request('https://api.brevo.com/v3/senders', headers={'api-key': os.environ['BREVO_API_KEY'], 'Accept': 'application/json'})
+    logger = logging.getLogger('backend')
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            senders = json.load(response).get('senders', [])
+        sender = os.getenv('EMAIL_FROM') or os.getenv('SMTP_FROM') or ''
+        active = any(item.get('email', '').lower() == sender.lower() and item.get('active') for item in senders)
+        logger.info('Brevo sender verification status: %s', 'verified' if active else 'sender verification required')
+    except urllib.error.HTTPError as error:
+        try:
+            detail = json.load(error)
+        except (ValueError, TypeError):
+            detail = {}
+        message = str(detail.get('message', ''))
+        if 'unrecognised IP' in message:
+            address = re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', message)
+            logger.warning('Brevo IP authorization required for backend outbound IP: %s', address.group(0) if address else 'see Render network settings')
+        else:
+            logger.warning('Brevo sender diagnostic returned HTTP %s. Check the API key and sender configuration.', error.code)
+    except (urllib.error.URLError, TimeoutError):
+        logger.warning('Brevo sender diagnostic could not reach the email API.')
 
 
 def email_configured():

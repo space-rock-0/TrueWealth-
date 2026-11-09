@@ -16,7 +16,7 @@ from app.core.db import (get_history, get_review_queue, get_stats, init_db,
 from app.core.logger import logger
 from app.core.review import needs_review
 from app.core.rate_limit import limiter
-from app.core.email_delivery import email_configured
+from app.core.email_delivery import inspect_email_sender
 from app.core.state import initialize_state
 from app.core.workflow import get_workflow_app
 from app.auth import get_current_user, require_csrf, router as auth_router
@@ -98,6 +98,7 @@ if os.getenv("APP_ENV", "development").lower() == "production":
         raise RuntimeError("Production requires verified email accounts.")
     if not RATE_LIMIT_ENABLED:
         raise RuntimeError("Production requires rate limiting.")
+    inspect_email_sender()
 if os.getenv("APP_ENV", "development").lower() == "production" and not os.getenv("DATABASE_URL", "").startswith(("postgres://", "postgresql://", "postgresql+psycopg://")):
     raise RuntimeError("Production requires DATABASE_URL pointing to PostgreSQL so account and chat data persist across restarts.")
 
