@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: truewealth-api-sagi
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    region: singapore
+    healthCheckPath: /api/health
+    plan: free
+    envVars:
+      - key: RETRIEVAL_BACKEND
+        value: lexical
+      - key: APP_ENV
+        value: production
+      - key: EMAIL_VERIFICATION_REQUIRED
+        value: "true"
+      - key: FRONTEND_URL
+        value: https://truewealth-sagi.vercel.app
+      - key: APP_ALLOWED_ORIGINS
+        value: https://truewealth-sagi.vercel.app
+      - key: DATABASE_URL
+        sync: false
+      - key: EMAIL_PROVIDER
+        value: brevo
+      - key: EMAIL_FROM
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      - key: OCR_ISOLATED
+        value: "true"
+      - key: OCR_MAX_PAGES
+        value: "4"
+      - key: OCR_MAX_IMAGE_EDGE
+        value: "1800"

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: truewealth-backend
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - ./backend/logs:/app/logs
+      # Exclude venv and __pycache__ mapping to avoid conflict
+      - /app/venv
+      - /app/__pycache__
+
+  frontend:
+    build: ./frontend
+    container_name: truewealth-frontend
+    ports:
+      - "3000:80"
+    environment:
+      API_PROXY_HOST: backend:5001
+      NGINX_ENVSUBST_FILTER: ^API_PROXY_HOST$
+    depends_on:
+      - backend

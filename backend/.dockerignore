@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.venv
+venv
+__pycache__
+*.py[cod]
+logs
+tests
+app/finance_db
+app/notebook
+.pytest-work
+.pytest_cache
+.coverage
+*.sqlite3

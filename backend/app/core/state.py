@@ -1,0 +1,54 @@
+from typing import List, Optional, TypedDict
+
+
+class AgentState(TypedDict):
+    question: str
+    generation: str
+    documents: List[object]
+    source: str
+    retry_count: int
+    memory: List[str]
+    conversation_history: List[str]
+    llm_attempted: bool
+    rag_attempted: bool
+    yfinance_attempted: bool
+    ddg_attempted: bool
+    retry_count: int
+    search_query: str
+    degraded: str
+    tokens_used: int
+    model_used: str
+    fallback_used: bool
+    compliance: Optional[dict]
+    verification: Optional[dict]
+    portfolio_input: Optional[list]
+    portfolio_analysis: Optional[dict]
+    session_id: str
+    user_id: int
+
+
+def initialize_state() -> AgentState:
+    return {
+        "question": "",
+        "generation": "",
+        "documents": [],
+        "source": "",
+        "retry_count": 0,
+        "memory": [],
+        "conversation_history": [],
+        "llm_attempted": False,
+        "rag_attempted": False,
+        "yfinance_attempted": False,
+        "ddg_attempted": False,
+        "search_query": "",
+        "degraded": "",
+        "tokens_used": 0,
+        "model_used": "",
+        "fallback_used": False,
+        "compliance": None,
+        "verification": None,
+        "portfolio_input": None,
+        "portfolio_analysis": None,
+        "session_id": "",
+        "user_id": 0
+    }
